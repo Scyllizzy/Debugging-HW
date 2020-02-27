@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspnetCoreWithBugs.Models;
+using AspnetCoreWithBugs.Data;
 
 namespace AspnetCoreWithBugs.Controllers
 {
@@ -33,7 +34,7 @@ namespace AspnetCoreWithBugs.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _context.AddAsync(product);
+                await ProductDB.Create(product, _context);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -54,9 +55,7 @@ namespace AspnetCoreWithBugs.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Update(product);
-                await _context.SaveChangesAsync();
- 
+                await ProductDB.Edit(product, _context);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -79,7 +78,8 @@ namespace AspnetCoreWithBugs.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var product = await _context.Product.FindAsync(id);
-            _context.Product.Remove(product);
+            await ProductDB.Delete(product, _context);
+
             return RedirectToAction(nameof(Index));
         }
 
